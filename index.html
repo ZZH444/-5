@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web前端技术推荐墙</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 24px;
+            font-size: 28px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 顶部搜索框 */
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 420px;
+            padding: 12px 18px;
+            font-size: 15px;
+            color: #333;
+            background: #fff;
+            border: 2px solid transparent;
+            border-radius: 30px;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.28);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tech-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tech-card .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .tech-card h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tech-card .desc {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .tech-card .level {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #fff;
+            background: #667eea;
+            margin-bottom: 10px;
+        }
+
+        /* 不同难度用不同颜色，一眼能看出来 */
+        .tech-card .level.lv-入门 { background: #48bb78; }
+        .tech-card .level.lv-进阶 { background: #667eea; }
+        .tech-card .level.lv-高级 { background: #ed8936; }
+
+        .tech-card .users {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* 搜不到时的提示 */
+        .empty-tip {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🚀 Web前端技术推荐墙</h1>
+
+    <!-- 顶部搜索框 -->
+    <div class="toolbar">
+        <input id="searchInput" type="text" placeholder="搜索技术">
+    </div>
+
+    <div class="tech-grid" id="techGrid"></div>
+
+    <script>
+        //TODO1：从这里开始，你的主场！数据数组：给出第1个作为示例，请补全其余9个
+        //字段说明：
+        //  icon  - 技术图标（emoji）
+        //  name  - 技术名称
+        //  desc  - 一句话描述
+        //  level - 难度（入门/进阶/高级）
+        //  users - 学习人数
+        const technologies = [
+            { icon: "🌐", name: "HTML5", desc: "网页的骨架", level: "入门", users: 100000 },
+            { icon: "🎨", name: "CSS3", desc: "网页的外衣", level: "入门", users: 95000 },
+            { icon: "⚡", name: "JavaScript", desc: "网页的灵魂", level: "入门", users: 98000 },
+            { icon: "💚", name: "Vue.js", desc: "渐进式框架", level: "进阶", users: 78000 },
+            { icon: "⚛️", name: "React", desc: "组件化UI库", level: "进阶", users: 82000 },
+            { icon: "🟩", name: "Node.js", desc: "JS后端运行时", level: "进阶", users: 65000 },
+            { icon: "🔷", name: "TypeScript", desc: "带类型的JS", level: "进阶", users: 55000 },
+            { icon: "📦", name: "Webpack", desc: "模块打包工具", level: "高级", users: 48000 },
+            { icon: "⚡", name: "Vite", desc: "极速构建工具", level: "进阶", users: 42000 },
+            { icon: "▲", name: "Next.js", desc: "React全栈框架", level: "高级", users: 38000 }
+        ];
+
+        // 拿到容器（只查一次，后面反复用）
+        const techGrid = document.getElementById("techGrid");
+        const searchInput = document.getElementById("searchInput");
+
+        // ============================================
+        // 接下来，看你的：用 map + 模板字符串 + innerHTML
+        // 把这10个技术渲染成卡片，塞进 #techGrid 里
+        // ============================================
+
+        // 渲染函数：传进来一个数组，就渲染这个数组
+        function render(list) {
+            // TODO 2：用 map + 模板字符串生成卡片HTML字符串
+            const html = list.map(function (t) {
+                return `
+                <div class="tech-card">
+                    <div class="icon">${t.icon}</div>
+                    <h3>${t.name}</h3>
+                    <div class="desc">${t.desc}</div>
+                    <div class="level lv-${t.level}">${t.level}</div>
+                    <div class="users">👥 ${t.users} 人学习</div>
+                </div>`;
+            })
+                // TODO 3：用 .join('') 拼接成完整字符串
+                .join("");
+
+            // TODO 4：用 document.getElementById('techGrid').innerHTML 塞进页面
+            techGrid.innerHTML = html || `<div class="empty-tip">没有找到匹配的技术 😢</div>`;
+        }
+
+        // 首次渲染：把 10 个技术全部显示出来
+        render(technologies);
+
+        // 实时搜索：filter() + includes() + 重新渲染
+        searchInput.addEventListener("input", function (e) {
+            const keyword = e.target.value.trim().toLowerCase();
+
+            const result = technologies.filter(function (t) {
+                return t.name.toLowerCase().includes(keyword) ||
+                       t.desc.toLowerCase().includes(keyword);
+            });
+
+            render(result);
+        });
+
+        // 选做：事件委托 + e.target.closest() 实现卡片点击
+        techGrid.addEventListener("click", function (e) {
+            const card = e.target.closest(".tech-card");
+            if (!card) return;                       // 点到的不是卡片，直接返回
+
+            const name = card.querySelector("h3").textContent;
+            alert("你点击了：" + name);
+        });
+    </script>
+</body>
+
+</html>
